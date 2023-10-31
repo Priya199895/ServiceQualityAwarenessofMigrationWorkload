@@ -17,4 +17,6 @@ Investigate on how to reliably forecast the influence of migration on the qualit
 3. Use for developing the architechture of protoype.  - 30mins. 
 
 ## Literature and Resources
-* [The cloud migration forecast: Cloudy with a chance of clouds] (The cloud migration forecast: Cloudy with a chance of clouds)
+* [The cloud migration forecast: Cloudy with a chance of clouds] (https://www2.deloitte.com/us/en/insights/industry/technology/technology-media-and-telecom-predictions/2021/cloud-migration-trends-and-forecast.html)
+
+* [paper Revious on VM and Migration in Cloud](https://link.springer.com/article/10.1007/s10586-019-03032-x)
