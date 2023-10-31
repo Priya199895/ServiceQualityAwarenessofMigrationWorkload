@@ -15,3 +15,6 @@ Investigate on how to reliably forecast the influence of migration on the qualit
 2. Discuss the requirement and strategy. - 15mins
    Technological Requirements and tools to be used. Exercise with existing tools.
 3. Use for developing the architechture of protoype.  - 30mins. 
+
+## Literature and Resources
+* [The cloud migration forecast: Cloudy with a chance of clouds] (The cloud migration forecast: Cloudy with a chance of clouds)
