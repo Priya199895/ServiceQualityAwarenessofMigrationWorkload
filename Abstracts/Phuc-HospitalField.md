@@ -34,3 +34,6 @@ Documentation and Record Keeping: Maintain meticulous documentation of all migra
 Feedback and Continuous Improvement: Encourage feedback from healthcare professionals and patients to identify any issues and opportunities for improvement in service quality.
 
 Migrating workloads in the hospital field is complex and requires a high level of diligence to maintain service quality and patient care standards. Careful planning, extensive testing, and adherence to healthcare regulations are essential components of a successful migration while preserving the quality of service.
+
+Some papers: 
+1.https://link.springer.com/article/10.1186/s12913-015-1065-z  Challenges in the provision of healthcare services for migrants: a systematic review through providers’ lens
