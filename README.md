@@ -19,4 +19,10 @@ Investigate on how to reliably forecast the influence of migration on the qualit
 ## Literature and Resources
 * [The cloud migration forecast: Cloudy with a chance of clouds](https://www2.deloitte.com/us/en/insights/industry/technology/technology-media-and-telecom-predictions/2021/cloud-migration-trends-and-forecast.html)
 
-* [Efficient VM migrations using forecasting techniques in cloud computing: a comprehensive review](https://link.springer.com/article/10.1007/s10586-019-03032-x)
+* [Efficient VM migrations using forecasting techniques in cloud computing: a comprehensive review](https://link.springer.com/article/10.1007/s10586-019-03032-x)  
+My summary and conclution from the paper “Efficient VM migrations using forecasting techniques in cloud computing” are as following:
+The paper discusses efficient virtual machine (VM) migrations in cloud computing. It covers challenges and benefits, hypervisors and migration types, migration metrics and classification, network performance and cost, predictive models for VM migration, and ensemble methods. The main focus is on optimizing VM migrations in cloud data centers. Following are the main topics from the paper:
+
+
+
+
