@@ -1,0 +1,136 @@
+groups:
+
+  - name: DiskUsage
+    rules:
+    - alert: 'Low Data Disk Space'
+      expr: ceil(((node_filesystem_size_bytes{mountpoint!="/boot"} - node_filesystem_free_bytes{mountpoint!="/boot"}) / node_filesystem_size_bytes{mountpoint!="/boot"} * 100)) > 90
+      labels:
+        severity: critical
+      annotations:
+        title: "Disk Usage"
+        description: 'Partition: {{$labels.mountpoint}}'
+        summary: "Disk usage is `{{humanize $value}}%`"
+        host: "{{$labels.instance}}"
+
+  - name: CPUUsage
+    rules:
+    - alert: 'Host High CPU Load'
+      expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: 'Host high CPU load (instance {{ $labels.instance }})'
+        description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+   # - name: DiskWillFillIn24Hours
+   # rules:
+   # - alert: HostDiskWillFillIn24Hours
+   # expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+   # for: 2m
+   # labels:
+   #   severity: warning
+   # annotations:
+   #   summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
+   #   description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: MemoryUsage
+    rules:
+    - alert: 'High Memory Usage'
+      expr: ceil((((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100)) > 80
+      labels:
+        severity: critical
+      annotations:
+        title: "Memory Usage"
+        description: 'Memory usage threshold set to `80%`.'
+        summary: "Memory usage is `{{humanize $value}}%`"
+        host: "{{$labels.instance}}"
+
+  - name: ServerDown
+    rules:
+    # Alert for any instance that is unreachable for > 1 minute
+    - alert: ServerDown
+      expr: up == 0
+      for: 1m
+      labels:
+        severity: page
+      annotations:
+        summary: "Server {{ $labels.instance }} down"
+        description: "{{ $labels.instance }} of job {{$labels.job}} has been down for more than 1 minute."
+
+  - name: HostFileSystemError
+    rules:
+    - alert: 'Host Filesystem Device Error'
+      expr: node_filesystem_device_error == 1
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Host filesystem sevice error (instance {{ $labels.instance }})"
+        description: "{{ $labels.instance }}: Device error with the {{ $labels.mountpoint }} filesystem\n VALUE = {{ $value }}\n LABELS = {{ $labels }}"
+
+  - name: HostUnusualDiskReadLatency
+    rules:
+    - alert: 'Host Unusual Disk Read Latency'
+      expr: (rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: 'Host unusual disk read latency (instance {{ $labels.instance }})'
+        description: 'Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}'
+
+  - name: HostUnusualDiskWriteLatency
+    rules:
+    - alert: 'Host Unusual Disk Write Latency'
+      expr: (rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Host unusual disk write latency (instance {{ $labels.instance }})"
+        description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: HostNetworkTransmitErrors
+    rules:
+    - alert: "Host Network Transmit Errors"
+      expr: (rate(node_network_transmit_errs_total[2m]) / rate(node_network_transmit_packets_total[2m]) > 0.01) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Host Network Transmit Errors (instance {{ $labels.instance }})"
+        description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} transmit errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: HostNetworkReceiveErrors
+    rules:
+    - alert: "Host Network Receive Errors"
+      expr: (rate(node_network_receive_errs_total[2m]) / rate(node_network_receive_packets_total[2m]) > 0.01) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Host Network Receive Errors (instance {{ $labels.instance }})"
+        description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} receive errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: PrometheusAlertManagerJobMissing
+    rules: 
+    - alert: "Prometheus Alertmanager Job Missing"
+      expr: absent(up{job="alertmanager"})
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Prometheus AlertManager job missing (instance {{ $labels.instance }})"
+        description: "A Prometheus AlertManager job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: PrometheusAlertManagerNotificationFailing
+    rules: 
+    - alert: "Prometheus Alertmanager Notification Failing"
+      expr: rate(alertmanager_notifications_failed_total[1m]) > 0
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Prometheus AlertManager notification failing (instance {{ $labels.instance }})"
+        description: "Alertmanager is failing sending notifications\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
