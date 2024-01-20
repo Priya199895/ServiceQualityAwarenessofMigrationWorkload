@@ -1,0 +1,35 @@
+global:
+  resolve_timeout: 1m
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alertmanagertestprometheus@gmail.com'
+  smtp_auth_username: 'alertmanagertestprometheus@gmai.com'
+  smtp_auth_password: 'fcwv ucml siwg rxyu'
+  smtp_require_tls: true
+
+templates:
+- '/etc/alertmanager/template/*.tmpl'
+
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'email-notifications'
+
+receivers:
+- name: 'email-notifications'
+  email_configs:
+  - to: 'minhtrang190199@gmail.com'
+    from: 'alertmanagertestprometheus@gmail.com'
+    smarthost: 'smtp.gmail.com:587'
+    auth_username: 'alertmanagertestprometheus@gmail.com'
+    auth_password: 'fcwv ucml siwg rxyu'
+    send_resolved: true
+    require_tls: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
