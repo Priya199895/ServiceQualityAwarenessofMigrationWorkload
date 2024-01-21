@@ -23,7 +23,7 @@ receivers:
     from: 'alertmanagertestprometheus@gmail.com'
     smarthost: 'smtp.gmail.com:587'
     auth_username: 'alertmanagertestprometheus@gmail.com'
-    auth_password: 'fcwv ucml siwg rxyu'
+    auth_password: '<alert manager pwd>'
     send_resolved: true
     require_tls: true
 
