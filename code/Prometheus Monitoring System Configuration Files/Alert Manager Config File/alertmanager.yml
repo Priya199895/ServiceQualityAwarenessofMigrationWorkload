@@ -3,7 +3,7 @@ global:
   smtp_smarthost: 'smtp.gmail.com:587'
   smtp_from: 'alertmanagertestprometheus@gmail.com'
   smtp_auth_username: 'alertmanagertestprometheus@gmai.com'
-  smtp_auth_password: 'fcwv ucml siwg rxyu'
+  smtp_auth_password: '<alert_manager_pwd>'
   smtp_require_tls: true
 
 templates:
@@ -19,11 +19,11 @@ route:
 receivers:
 - name: 'email-notifications'
   email_configs:
-  - to: 'minhtrang190199@gmail.com'
+  - to: 'minhtrang190199@gmail.com, priya.singh@stud.fra-uas.de, tiwari.rohan-brijesh@stud.fra-uas.de, huu.dinh@stud.fra-uas.de, ali.nekoh@stud.fra-uas.de'
     from: 'alertmanagertestprometheus@gmail.com'
     smarthost: 'smtp.gmail.com:587'
     auth_username: 'alertmanagertestprometheus@gmail.com'
-    auth_password: '<alert manager pwd>'
+    auth_password: '<alert_manager_pwd>'
     send_resolved: true
     require_tls: true
 
