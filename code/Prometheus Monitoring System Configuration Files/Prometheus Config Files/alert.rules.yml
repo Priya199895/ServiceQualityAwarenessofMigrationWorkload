@@ -1,27 +1,50 @@
 groups:
 
-  - name: DiskUsage
+    - name: DiskUsage80
     rules:
-    - alert: 'Low Data Disk Space'
-      expr: ceil(((node_filesystem_size_bytes{mountpoint!="/boot"} - node_filesystem_free_bytes{mountpoint!="/boot"}) / node_filesystem_size_bytes{mountpoint!="/boot"} * 100)) > 90
+    - alert: 'Warning: Low Data Disk Space'
+      expr: ceil(((node_filesystem_size_bytes{mountpoint!="/boot"} - node_filesystem_free_bytes{mountpoint!="/boot"}) / node_filesystem_size_bytes{mountpoint!="/boot"} * 100)) > 80
       labels:
-        severity: critical
+        severity: warning
       annotations:
         title: "Disk Usage"
         description: 'Partition: {{$labels.mountpoint}}'
         summary: "Disk usage is `{{humanize $value}}%`"
         host: "{{$labels.instance}}"
 
-  - name: CPUUsage
+  - name: DiskUsage90
+    rules:
+      - alert: 'Low Data Disk Space'
+        expr: ceil(((node_filesystem_size_bytes{mountpoint!="/boot"} - node_filesystem_free_bytes{mountpoint!="/boot"}) / node_filesystem_size_bytes{mountpoint!="/boot"} * 100)) > 90
+        labels:
+          severity: critical
+        annotations:
+          title: "Disk Usage"
+          description: 'Partition: {{$labels.mountpoint}}'
+          summary: "Disk usage is `{{humanize $value}}%`"
+          host: "{{$labels.instance}}"
+
+  - name: CPUUsage75
     rules:
     - alert: 'Host High CPU Load'
-      expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+      expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.70) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
       for: 10m
       labels:
         severity: warning
       annotations:
         summary: 'Host high CPU load (instance {{ $labels.instance }})'
-        description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "CPU load is > 75%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - name: CPUUsage80
+      rules:
+        - alert: 'Warning: Host High CPU Load'
+          expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.70) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: 'Host high CPU load (instance {{ $labels.instance }})'
+            description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
    # - name: DiskWillFillIn24Hours
    # rules:
@@ -34,17 +57,29 @@ groups:
    #   summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
    #   description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-  - name: MemoryUsage
+  - name: MemoryUsage75
     rules:
-    - alert: 'High Memory Usage'
-      expr: ceil((((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100)) > 80
-      labels:
-        severity: critical
-      annotations:
-        title: "Memory Usage"
-        description: 'Memory usage threshold set to `80%`.'
-        summary: "Memory usage is `{{humanize $value}}%`"
-        host: "{{$labels.instance}}"
+      - alert: 'Warning: High Memory Usage'
+        expr: ceil((((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100)) > 75
+        labels:
+          severity: warning
+        annotations:
+          title: "Memory Usage"
+          description: 'Memory usage threshold set to `80%`.'
+          summary: "Memory usage is `{{humanize $value}}%`"
+          host: "{{$labels.instance}}"
+
+    - name: MemoryUsage80
+    rules:
+      - alert: 'High Memory Usage'
+        expr: ceil((((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100)) > 80
+        labels:
+          severity: critical
+        annotations:
+          title: "Memory Usage"
+          description: 'Memory usage threshold set to `80%`.'
+          summary: "Memory usage is `{{humanize $value}}%`"
+          host: "{{$labels.instance}}"
 
   - name: ServerDown
     rules:
